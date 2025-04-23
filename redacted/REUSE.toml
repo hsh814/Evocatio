@@ -1,0 +1,162 @@
+version = 1
+
+[[annotations]]
+path = 'bugs/cve/2012/2806/cnode0006-heap-buffer-overflow-796.jpg'
+SPDX-FileCopyrightText = 'Chris Evans'
+
+[[annotations]]
+path = 'bugs/cve/2012/5134/bad.xml'
+SPDX-FileCopyrightText = 'Jueri Aedla'
+
+[[annotations]]
+path = 'bugs/cve/2013/7437/1.bmp'
+SPDX-FileCopyrightText = 'Murray McAllister'
+
+[[annotations]]
+path = 'bugs/cve/2013/7437/2.bmp'
+SPDX-FileCopyrightText = 'Stefan Cornelius'
+
+[[annotations]]
+path = 'bugs/cve/2014/8128/03_thumbnail.tiff'
+SPDX-FileCopyrightText = 'William Robinet'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'bugs/cve/2016/1838/attachment_316158',
+         'bugs/cve/2016/1839/asan_heap-oob' ]
+SPDX-FileCopyrightText = 'Mateusz Jurczyk'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2016/3186/crash.gif'
+SPDX-FileCopyrightText = 'Aladdin Mubaied'
+
+[[annotations]]
+path = 'bugs/cve/2016/5844/libarchive-signed-int-overflow.iso'
+SPDX-FileCopyrightText = 'Hanno Böck'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'bugs/cve/2016/8691/11.crash',
+         'bugs/cve/2016/9265/34.mp3',
+         'bugs/cve/2016/9265/45.mp3',
+         'bugs/cve/2016/9387/jas_matrix.jp2',
+         'bugs/cve/2016/9557/signed-int-overflow.jp2',
+         'bugs/cve/2016/10092/heapoverflow.tiff',
+         'bugs/cve/2016/10093/heapoverflow.tiff',
+         'bugs/cve/2016/10094/heapoverflow.tiff',
+         'bugs/cve/2016/10266/fpe.tiff',
+         'bugs/cve/2016/10267/fpe.tiff',
+         'bugs/cve/2016/10268/heapoverflow.tiff',
+         'bugs/cve/2016/10270/heapoverflow.tiff',
+         'bugs/cve/2016/10271/heapoverflow.tiff',
+         'bugs/cve/2016/10272/heapoverflow.tiff',
+         'bugs/cve/2017/7595/fpe.tiff',
+         'bugs/cve/2017/7599/outside-short.tiff',
+         'bugs/cve/2017/7600/outside-unsigned-char.tiff',
+         'bugs/cve/2017/7601/shift-long.tiff',
+         'bugs/cve/2017/15020/reproducer',
+         'bugs/cve/2017/15025/3899.crashes.bin',
+         'bugs/maptools/2633/heapoverflow.tiff' ]
+SPDX-FileCopyrightText = 'Agostino Sarubbo'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'bugs/cve/2016/5314/oobw.tiff',
+         'bugs/cve/2016/5321/ill-read.tiff' ]
+SPDX-FileCopyrightText = 'Kaixiang Zhang'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2016/9273/test049.tiff'
+SPDX-FileCopyrightText = 'Brian Carpenter'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2016/9532/heap-buffer-overflow.tiff'
+SPDX-FileCopyrightText = 'Henri Salo'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2017/5225/*.tiff'
+SPDX-FileCopyrightText = 'Li Yuekang'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2017/5969/crash-libxml2-recover.xml'
+SPDX-FileCopyrightText = 'Gustavo Grieco'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'bugs/cve/2017/6965/bug_3',
+         'bugs/cve/2018/10372/bug3',
+         'bugs/gnu/25023/argv', ]
+SPDX-FileCopyrightText = 'Phạm Văn Thuận'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'bugs/cve/2017/14745/crash_1',
+         'bugs/cve/2017/15025/floatexception.elf' ]
+SPDX-FileCopyrightText = 'Junchao Luan'
+
+[[annotations]]
+path = 'bugs/cve/2017/15232/*.jpg'
+SPDX-FileCopyrightText = 'Zhao Liang'
+
+[[annotations]]
+path = 'bugs/cve/2018/8806/heap-use-after-free.swf'
+SPDX-FileCopyrightText = 'ProbeFuzzer'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2018/8964/heap-use-after-free.swf'
+SPDX-FileCopyrightText = 'traceprobe'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2018/14498/*.bmp'
+SPDX-FileCopyrightText = 'Hongxu Chen'
+
+[[annotations]]
+path = 'bugs/cve/2018/19664/heap-buffer-overflow-2.jpg'
+SPDX-FileCopyrightText = 'cool-tomato'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/cve/2019/9077/hbo2'
+SPDX-FileCopyrightText = '陈鹏'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = 'bugs/gnu/19784/argv'
+SPDX-FileCopyrightText = 'Yury Usishchev'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'bugs/gnu/25003/argv',
+         'bugs/gnu/26545/argv' ]
+SPDX-FileCopyrightText = 'Pádraig Brady'
+SPDX-License-Identifier = 'CC0-1.0'
+
+[[annotations]]
+path = [ 'patches/evocatio-*.patch',
+         'patches/jasper-no-define-int-types.patch' ]
+SPDX-FileCopyrightText = 'Redacted'
+SPDX-License-Identifier = 'GPL-3.0-or-later'
+
+[[annotations]]
+path = 'patches/coreutils-gnulib-glibc-2.25.patch'
+SPDX-FileCopyrightText = 'Eric Blake'
+SPDX-License-Identifier = 'GPL-3.0-or-later'
+
+[[annotations]]
+path = [ 'patches/bugs/coreutils-unfix-bug-25003.patch',
+         'patches/coreutils-gnulib-glibc-2.28.patch' ]
+SPDX-FileCopyrightText = 'Paul Eggert'
+SPDX-License-Identifier = 'GPL-3.0-or-later'
+
+[[annotations]]
+# https://src.fedoraproject.org/rpms/ming/c/c6f24aedb4f66c5b3167b75bebc55b14fd6b5248
+path = 'patches/libming-parallel-make.patch'
+SPDX-FileCopyrightText = 'Dominik Mierzejewski'
+SPDX-License-Identifier = 'MIT'

@@ -1,0 +1,19 @@
+--- a/src/libjasper/include/jasper/jas_config.h.in
++++ b/src/libjasper/include/jasper/jas_config.h.in
+@@ -152,6 +152,7 @@
+ #undef inline
+ #endif
+ 
++#if 0
+ /* Define to `long long' if <sys/types.h> does not define. */
+ #undef longlong
+ 
+@@ -175,7 +176,7 @@
+ 
+ /* Define to `unsigned short' if <sys/types.h> does not define. */
+ #undef ushort
+-
++#endif
+ 
+ #else
+ /* A configure-based build is not being used. */

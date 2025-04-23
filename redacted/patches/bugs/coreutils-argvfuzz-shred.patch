@@ -1,0 +1,20 @@
+diff --git a/src/shred.c b/src/shred.c
+index a317c44393ab..91755a2fb44b 100644
+--- a/src/shred.c
++++ b/src/shred.c
+@@ -74,6 +74,7 @@
+ #define AUTHORS proper_name ("Colin Plumb")
+ 
+ #include <config.h>
++#include <afl/argv-fuzz-inl.h>
+ 
+ #include <getopt.h>
+ #include <stdio.h>
+@@ -1224,6 +1225,7 @@ main (int argc, char **argv)
+   int i;
+   char const *random_source = NULL;
+ 
++  AFL_INIT_SET0("shred");
+   initialize_main (&argc, &argv);
+   set_program_name (argv[0]);
+   setlocale (LC_ALL, "");

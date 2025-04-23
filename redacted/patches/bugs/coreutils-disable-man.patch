@@ -1,0 +1,35 @@
+diff --git a/Makefile.in b/Makefile.in
+index a39bb65064f7..c6345d2f49b8 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -14765,26 +14765,10 @@
+ 	     test) prog='['; argv='[';;					\
+ 		*) prog=$$name; argv=$$prog;;				\
+ 	esac;								\
+-	rm -f $@ $@-t							\
+-	  && t=$*.td							\
+-	  && rm -rf $$t							\
+-	  && $(MKDIR_P) $$t						\
+-	  && (cd $$t && $(LN_S) '$(abs_top_builddir)/src/'$$prog$(EXEEXT) \
+-				$$argv$(EXEEXT))			\
+-	&& : $${SOURCE_DATE_EPOCH=`cat $(srcdir)/.timestamp 2>/dev/null || :`} \
+-	&& export SOURCE_DATE_EPOCH && $(run_help2man)			\
+-		     --source='$(PACKAGE_STRING)'			\
+-		     --include=$(srcdir)/man/$$name.x			\
+-		     --output=$$t/$$name.1				\
+-		     --info-page='\(aq(coreutils) '$$name' invocation\(aq' \
+-		     $$t/$$argv$(EXEEXT)				\
+-	  && sed \
+-	       -e 's|$*\.td/||g' \
+-	       -e '/For complete documentation/d' \
+-	       $$t/$$name.1 > $@-t			\
+-	  && rm -rf $$t							\
+-	  && chmod a-w $@-t						\
+-	  && mv $@-t $@
++	rm -f $@ $@-t
++	touch $@-t
++	chmod a-w $@-t
++	mv $@-t $@
+ .PHONY: check-root
+ check-root:
+ 	$(MAKE) check TESTS='$(root_tests)' SUBDIRS=.

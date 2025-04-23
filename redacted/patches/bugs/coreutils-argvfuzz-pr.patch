@@ -1,0 +1,20 @@
+diff --git a/src/pr.c b/src/pr.c
+index 8885fff4f8c3..0c2bbc9c2265 100644
+--- a/src/pr.c
++++ b/src/pr.c
+@@ -308,6 +308,7 @@
+ */
+ 
+ #include <config.h>
++#include <afl/argv-fuzz-inl.h>
+ 
+ #include <getopt.h>
+ #include <sys/types.h>
+@@ -855,6 +856,7 @@ main (int argc, char **argv)
+   size_t n_digits = 0;
+   size_t n_alloc = 0;
+ 
++  AFL_INIT_SET0("pr");
+   initialize_main (&argc, &argv);
+   set_program_name (argv[0]);
+   setlocale (LC_ALL, "");

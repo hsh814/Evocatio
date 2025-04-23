@@ -1,0 +1,13 @@
+diff --git a/src/pr.c b/src/pr.c
+index 8885fff4f8c3..0c2bbc9c2265 100644
+--- a/src/pr.c
++++ b/src/pr.c
+@@ -1220,7 +1222,7 @@ init_parameters (int number_of_files)
+       /* It's rather pointless to define a TAB separator with column
+          alignment */
+       else if (!join_lines && *col_sep_string == '\t')
+-        col_sep_string = column_separator;
++        abort();
+ 
+       truncate_lines = true;
+       tabify_output = true;

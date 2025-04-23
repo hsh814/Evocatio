@@ -1,0 +1,30 @@
+diff --git a/bug-severity-AFLplusplus/utils/argv_fuzzing/Makefile b/bug-severity-AFLplusplus/utils/argv_fuzzing/Makefile
+index 5a0ac6e609c0..20dcb5b9f57b 100644
+--- a/bug-severity-AFLplusplus/utils/argv_fuzzing/Makefile
++++ b/bug-severity-AFLplusplus/utils/argv_fuzzing/Makefile
+@@ -16,9 +16,10 @@
+ PREFIX     ?= /usr/local
+ BIN_PATH    = $(PREFIX)/bin
+ HELPER_PATH = $(PREFIX)/lib/afl
++INCLUDE_PATH = $(PREFIX)/include/afl
+ 
+-CFLAGS = -fPIC -Wall -Wextra
+-LDFLAGS = -shared
++CFLAGS += -fPIC -Wall -Wextra -D__x86_64__ -D__LP64__
++LDFLAGS += -shared
+ 
+ UNAME_SAYS_LINUX=$(shell uname | grep -E '^Linux|^GNU' >/dev/null; echo $$?)
+ UNAME_SAYS_LINUX:sh=uname | grep -E '^Linux|^GNU' >/dev/null; echo $$?
+@@ -47,9 +48,10 @@ argvfuzz32.so: argvfuzz.c
+ 	-@$(CC) $(M32FLAG) $(CFLAGS) $^ $(LDFLAGS) -o $@ 2>/dev/null || echo "argvfuzz32 build failure (that's fine)"
+ 
+ argvfuzz64.so: argvfuzz.c
+-	-@$(CC) $(M64FLAG) $(CFLAGS) $^ $(LDFLAGS) -o $@ 2>/dev/null || echo "argvfuzz64 build failure (that's fine)"
++	$(CC) $(M64FLAG) $(CFLAGS) $^ $(LDFLAGS) -o $@
+ 
+-install: argvfuzz32.so argvfuzz64.so
++install: argv-fuzz-inl.h argvfuzz32.so argvfuzz64.so
++	install -Dm 755 argv-fuzz-inl.h $(DESTDIR)$(INCLUDE_PATH)/argv-fuzz-inl.h
+ 	install -d -m 755 $(DESTDIR)$(HELPER_PATH)/
+ 	if [ -f argvfuzz32.so ]; then set -e; install -m 755 argvfuzz32.so $(DESTDIR)$(HELPER_PATH)/; fi
+ 	if [ -f argvfuzz64.so ]; then set -e; install -m 755 argvfuzz64.so $(DESTDIR)$(HELPER_PATH)/; fi

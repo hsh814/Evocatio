@@ -1,0 +1,12 @@
+diff --git a/tools/tiff2ps.c b/tools/tiff2ps.c
+index 82a5d84b41f5..e36d46bd4a91 100644
+--- a/tools/tiff2ps.c
++++ b/tools/tiff2ps.c
+@@ -2440,6 +2440,7 @@ PSDataColorContig(FILE* fd, TIFF* tif, uint32 w, uint32 h, int nc)
+ 	unsigned char *cp, c;
+ 
+ 	(void) w;
++	abort();
+ 	tf_buf = (unsigned char *) _TIFFmalloc(tf_bytesperrow);
+ 	if (tf_buf == NULL) {
+ 		TIFFError(filename, "No space for scanline buffer");

@@ -1,0 +1,56 @@
+#!/bin/sh
+set -ex
+mkdir -p out/binutils/CVE-2017-15025
+mkdir -p out/binutils/CVE-2018-10372
+mkdir -p out/coreutils/bugzilla-19784
+mkdir -p out/coreutils/bugzilla-26545
+mkdir -p out/coreutils/gnubug-25003
+mkdir -p out/coreutils/gnubug-25023
+mkdir -p out/jasper/CVE-2016-8691
+mkdir -p out/jasper/CVE-2016-9387
+mkdir -p out/libjpeg/CVE-2012-2806
+mkdir -p out/libjpeg/CVE-2017-15232
+mkdir -p out/libjpeg/CVE-2018-14498
+mkdir -p out/libjpeg/CVE-2018-19664
+mkdir -p out/libtiff/bugzilla-2611
+mkdir -p out/libtiff/bugzilla-2633
+mkdir -p out/libtiff/CVE-2014-8128
+mkdir -p out/libtiff/CVE-2016-10094
+mkdir -p out/libtiff/CVE-2016-3186
+mkdir -p out/libtiff/CVE-2016-3623
+mkdir -p out/libtiff/CVE-2016-5314
+mkdir -p out/libtiff/CVE-2016-5321
+mkdir -p out/libtiff/CVE-2016-9273
+mkdir -p out/libtiff/CVE-2017-7595
+mkdir -p out/libtiff/CVE-2017-7601
+mkdir -p out/libxml2/CVE-2012-5134
+mkdir -p out/libxml2/CVE-2016-1838
+mkdir -p out/libxml2/CVE-2016-1839
+mkdir -p out/libxml2/CVE-2017-5969
+guix shell -L redacted evocatio -e '(@ (redacted bugs) binutils-cve-2017-15025)'      -- screen -dmS binutils-CVE-2017-15025  -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2017/15025 -o out/binutils/CVE-2017-15025  -k redacted/bugs/cve/2017/15025/floatexception.elf                     -- nm -l @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) binutils-cve-2018-10372)'      -- screen -dmS binutils-CVE-2018-10372  -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2018/10372 -o out/binutils/CVE-2018-10372  -k redacted/bugs/cve/2018/10372/bug3                                   -- readelf -w @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) coreutils-bug-19784)'          -- screen -dmS coreutils-bugzilla-19784 -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/gnu/19784      -o out/coreutils/bugzilla-19784 -k redacted/bugs/gnu/19784/argv                                        -- make-prime-list
+guix shell -L redacted evocatio -e '(@ (redacted bugs) coreutils-bug-25003)'          -- screen -dmS coreutils-gnubug-25003   -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/gnu/25003      -o out/coreutils/gnubug-25003   -k redacted/bugs/gnu/25003/argv                                        -- split
+guix shell -L redacted evocatio -e '(@ (redacted bugs) coreutils-bug-25023)'          -- screen -dmS coreutils-gnubug-25023   -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/gnu/25023      -o out/coreutils/gnubug-25023   -k redacted/bugs/gnu/25023/argv                                        -- pr
+guix shell -L redacted evocatio -e '(@ (redacted bugs) coreutils-bug-26545)'          -- screen -dmS coreutils-bugzilla-26545 -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/gnu/26545      -o out/coreutils/bugzilla-26545 -k redacted/bugs/gnu/26545/argv                                        -- shred
+guix shell -L redacted evocatio -e '(@ (redacted bugs) jasper-cve-2016-8691)'         -- screen -dmS jasper-CVE-2016-8691     -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/8691  -o out/jasper/CVE-2016-8691     -k redacted/bugs/cve/2016/8691/11.crash                                -- imginfo -f @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) jasper-cve-2016-9387)'         -- screen -dmS jasper-CVE-2016-9387     -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/9387  -o out/jasper/CVE-2016-9387     -k redacted/bugs/cve/2016/9387/jas_matrix.jp2                          -- imginfo -f @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libjpeg-turbo-cve-2012-2806)'  -- screen -dmS libjpeg-CVE-2012-2806    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2012/2806  -o out/libjpeg/CVE-2012-2806    -k redacted/bugs/cve/2012/2806/cnode0006-heap-buffer-overflow-796.jpg  -- djpeg @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libjpeg-turbo-cve-2017-15232)' -- screen -dmS libjpeg-CVE-2017-15232   -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2017/15232 -o out/libjpeg/CVE-2017-15232   -k redacted/bugs/cve/2017/15232/1.jpg                                  -- djpeg -crop "1x1+16+16" -onepass -dither ordered -dct float -colors 8 -targa -grayscale -outfile /dev/null @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libjpeg-turbo-cve-2018-14498)' -- screen -dmS libjpeg-CVE-2018-14498   -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2018/14498 -o out/libjpeg/CVE-2018-14498   -k redacted/bugs/cve/2018/14498/hbo_rdbmp.c:209_1.bmp                  -- cjpeg -outfile /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libjpeg-turbo-cve-2018-19664)' -- screen -dmS libjpeg-CVE-2018-19664   -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2018/19664 -o out/libjpeg/CVE-2018-19664   -k redacted/bugs/cve/2018/19664/heap-buffer-overflow-2.jpg             -- djpeg -colors 256 -bmp
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-bug-2633)'             -- screen -dmS libtiff-bugzilla-2633    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/maptools/2633  -o out/libtiff/bugzilla-2633    -k redacted/bugs/maptools/2633/heapoverflow.tiff                       -- tiff2ps @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2014-8128)'        -- screen -dmS libtiff-CVE-2014-8128    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2014/8128  -o out/libtiff/CVE-2014-8128    -k redacted/bugs/cve/2014/8128/03_thumbnail.tiff                       -- thumbnail @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-3186)'        -- screen -dmS libtiff-CVE-2016-3186    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/3186  -o out/libtiff/CVE-2016-3186    -k redacted/bugs/cve/2016/3186/crash.gif                               -- gif2tiff @@ -
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-3623)'        -- screen -dmS libtiff-CVE-2016-3623    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/3623  -o out/libtiff/CVE-2016-3623    -k redacted/bugs/cve/2016/3623/exploit.tif                             -- rgb2ycbcr -h 0 @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-5314)'        -- screen -dmS libtiff-CVE-2016-5314    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/5314  -o out/libtiff/CVE-2016-5314    -k redacted/bugs/cve/2016/5314/oobw.tiff                               -- rgb2ycbcr @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-5321)'        -- screen -dmS libtiff-CVE-2016-5321    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/5321  -o out/libtiff/CVE-2016-5321    -k redacted/bugs/cve/2016/5321/ill-read.tiff                           -- tiffcrop @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-9273)'        -- screen -dmS libtiff-CVE-2016-9273    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/9273  -o out/libtiff/CVE-2016-9273    -k redacted/bugs/cve/2016/9273/test049.tiff                            -- tiffsplit @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-10094)'       -- screen -dmS libtiff-CVE-2016-10094   -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/10094 -o out/libtiff/CVE-2016-10094   -k redacted/bugs/cve/2016/10094/heapoverflow.tiff                      -- tiff2pdf @@ -o /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2016-10267)'       -- screen -dmS libtiff-bugzilla-2611    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/10267 -o out/libtiff/bugzilla-2611    -k redacted/bugs/cve/2016/10267/fpe.tiff                               -- tiffmedian @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2017-7595)'        -- screen -dmS libtiff-CVE-2017-7595    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2017/7595  -o out/libtiff/CVE-2017-7595    -k redacted/bugs/cve/2017/7595/fpe.tiff                                -- tiffcp -i @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libtiff-cve-2017-7601)'        -- screen -dmS libtiff-CVE-2017-7601    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2017/7601  -o out/libtiff/CVE-2017-7601    -k redacted/bugs/cve/2017/7601/shift-long.tiff                         -- tiffcp -i @@ /dev/null
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libxml2-cve-2012-5134)'        -- screen -dmS libxml2-CVE-2012-5134    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2012/5134  -o out/libxml2/CVE-2012-5134    -k redacted/bugs/cve/2012/5134/bad.xml                                 -- xmllint @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libxml2-cve-2016-1838)'        -- screen -dmS libxml2-CVE-2016-1838    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/1838  -o out/libxml2/CVE-2016-1838    -k redacted/bugs/cve/2016/1838/attachment_316158                       -- xmllint @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libxml2-cve-2016-1839)'        -- screen -dmS libxml2-CVE-2016-1839    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2016/1839  -o out/libxml2/CVE-2016-1839    -k redacted/bugs/cve/2016/1839/asan_heap-oob                           -- xmllint --html @@
+guix shell -L redacted evocatio -e '(@ (redacted bugs) libxml2-cve-2017-5969)'        -- screen -dmS libxml2-CVE-2017-5969    -- timeout 12h afl-fuzz -m none -C -i redacted/bugs/cve/2017/5969  -o out/libxml2/CVE-2017-5969    -k redacted/bugs/cve/2017/5969/crash-libxml2-recover.xml               -- xmllint --recover @@

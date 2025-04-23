@@ -1,0 +1,20 @@
+diff --git a/src/split.c b/src/split.c
+index 9a0704c26184..7b53ca5f6dee 100644
+--- a/src/split.c
++++ b/src/split.c
+@@ -20,6 +20,7 @@
+    * support -p REGEX as in BSD's split.
+    * support --suppress-matched as in csplit.  */
+ #include <config.h>
++#include <afl/argv-fuzz-inl.h>
+ 
+ #include <assert.h>
+ #include <stdio.h>
+@@ -1295,6 +1296,7 @@ main (int argc, char **argv)
+   int digits_optind = 0;
+   off_t file_size = OFF_T_MAX;
+ 
++  AFL_INIT_SET0("split");
+   initialize_main (&argc, &argv);
+   set_program_name (argv[0]);
+   setlocale (LC_ALL, "");

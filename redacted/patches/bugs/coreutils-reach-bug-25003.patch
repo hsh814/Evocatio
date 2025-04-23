@@ -1,0 +1,10 @@
+diff --git a/src/split.c b/src/split.c
+index 9a0704c26184..7b53ca5f6dee 100644
+@@ -982,6 +984,7 @@ bytes_chunk_extract (uintmax_t k, uintmax_t n, char *buf, size_t bufsize,
+   start = (k - 1) * (file_size / n);
+   end = (k == n) ? file_size : k * (file_size / n);
+ 
++  abort();
+   if (initial_read != SIZE_MAX || start < initial_read)
+     {
+       memmove (buf, buf + start, initial_read - start);

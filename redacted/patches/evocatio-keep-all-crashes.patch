@@ -1,0 +1,20 @@
+diff --git a/bug-severity-AFLplusplus/src/afl-fuzz-bitmap.c b/bug-severity-AFLplusplus/src/afl-fuzz-bitmap.c
+index aeed7cfb315a..682130bb4437 100644
+--- a/bug-severity-AFLplusplus/src/afl-fuzz-bitmap.c
++++ b/bug-severity-AFLplusplus/src/afl-fuzz-bitmap.c
+@@ -1230,15 +1230,6 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
+ 
+       ++afl->total_crashes;
+ 
+-      if (afl->unique_crashes >= KEEP_UNIQUE_CRASH) { return keeping; }
+-
+-      if (likely(!afl->non_instrumented_mode)) {
+-
+-        //if (!has_new_bits(afl, afl->virgin_crash)) { return keeping; }
+-        if (!has_new_capability(afl, afl->queue_cur, mem)) { return keeping; }
+-
+-      }
+-
+       if (unlikely(!afl->unique_crashes)) { write_crash_readme(afl); }
+ 
+ #ifndef SIMPLE_FILES
