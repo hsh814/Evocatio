@@ -849,6 +849,7 @@ bool ModuleSanitizerCoverage::InjectCoverage(Function &             F,
         if (callInst->getCallingConv() != llvm::CallingConv::C) continue;
         StringRef FuncName = Callee->getName();
         if (FuncName.compare(StringRef("__afl_coverage_interesting"))) continue;
+        if (FuncName.compare(StringRef("__afl_pacfix_mark_target_reached"))) continue;
 
         uint32_t id = 1 + instr + (uint32_t)AllBlocks.size() + special++;
         Value *  val = ConstantInt::get(Int32Ty, id);

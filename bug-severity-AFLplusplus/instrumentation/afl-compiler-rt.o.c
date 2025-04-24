@@ -86,6 +86,7 @@ extern ssize_t _kern_write(int fd, off_t pos, const void *buffer,
 static u8  __afl_area_initial[MAP_INITIAL_SIZE];
 static u8 *__afl_area_ptr_dummy = __afl_area_initial;
 static u8 *__afl_area_ptr_backup = __afl_area_initial;
+static u8 *__afl_pacfix_target_reached_ptr = __afl_area_initial;
 
 u8 *       __afl_area_ptr = __afl_area_initial;
 u8 *       __afl_dictionary;
@@ -152,6 +153,15 @@ static void at_exit(int signal) {
 
   if (child_pid > 0) { kill(child_pid, SIGKILL); }
 
+}
+
+void __afl_pacfix_mark_target_reached() {
+  
+  if (__afl_pacfix_target_reached_ptr) {
+
+    *__afl_pacfix_target_reached_ptr = 1;
+
+  }
 }
 
 /* Uninspired gcc plugin instrumentation */
@@ -312,6 +322,8 @@ static void __afl_map_shm(void) {
 
   }
 
+  char *id_str_pacfix = getenv(SHM_ENV_VAR_PACFIX);
+
   /* If we're running under AFL, attach to the appropriate region, replacing the
      early-stage __afl_area_initial region that is needed to allow some really
      hacky .init code to work correctly in projects such as OpenSSL. */
@@ -319,12 +331,12 @@ static void __afl_map_shm(void) {
   if (__afl_debug) {
 
     fprintf(stderr,
-            "DEBUG: (1) id_str %s, __afl_area_ptr %p, __afl_area_initial %p, "
+            "DEBUG: (1) id_str %s, id_str_pacfix %s, __afl_area_ptr %p, __afl_area_initial %p, "
             "__afl_area_ptr_dummy %p, __afl_map_addr 0x%llx, MAP_SIZE %u, "
             "__afl_final_loc %u, "
             "max_size_forkserver %u/0x%x\n",
-            id_str == NULL ? "<null>" : id_str, __afl_area_ptr,
-            __afl_area_initial, __afl_area_ptr_dummy, __afl_map_addr, MAP_SIZE,
+            id_str == NULL ? "<null>" : id_str, id_str_pacfix ? id_str_pacfix : "<null>",
+            __afl_area_ptr, __afl_area_initial, __afl_area_ptr_dummy, __afl_map_addr, MAP_SIZE,
             __afl_final_loc, FS_OPT_MAX_MAPSIZE, FS_OPT_MAX_MAPSIZE);
 
   }
@@ -467,14 +479,37 @@ static void __afl_map_shm(void) {
 
   __afl_area_ptr_backup = __afl_area_ptr;
 
+  if (id_str_pacfix) {
+
+    u32 shm_id = atoi(id_str_pacfix);
+
+    __afl_pacfix_target_reached_ptr =
+        (u8 *)shmat(shm_id, (void *)__afl_map_addr, 0);
+
+    /* Whooooops. */
+
+    if (!__afl_pacfix_target_reached_ptr ||
+        __afl_pacfix_target_reached_ptr == (void *)-1) {
+
+      if (__afl_map_addr)
+        send_forkserver_error(FS_ERROR_MAP_ADDR);
+      else
+        send_forkserver_error(FS_ERROR_SHMAT);
+
+      perror("shmat for map");
+      _exit(1);
+
+    }
+  }
+
   if (__afl_debug) {
 
     fprintf(stderr,
-            "DEBUG: (2) id_str %s, __afl_area_ptr %p, __afl_area_initial %p, "
+            "DEBUG: (2) id_str %s, __afl_area_ptr %p, __afl_pacfix_target_reached %p, __afl_area_initial %p, "
             "__afl_area_ptr_dummy %p, __afl_map_addr 0x%llx, MAP_SIZE "
             "%u, __afl_final_loc %u, "
             "max_size_forkserver %u/0x%x\n",
-            id_str == NULL ? "<null>" : id_str, __afl_area_ptr,
+            id_str == NULL ? "<null>" : id_str, __afl_area_ptr, __afl_pacfix_target_reached_ptr,
             __afl_area_initial, __afl_area_ptr_dummy, __afl_map_addr, MAP_SIZE,
             __afl_final_loc, FS_OPT_MAX_MAPSIZE, FS_OPT_MAX_MAPSIZE);
 

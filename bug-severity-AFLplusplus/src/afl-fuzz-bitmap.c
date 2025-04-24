@@ -1019,6 +1019,10 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
   }
 
+  if (fault == FSRV_RUN_OK || fault == FSRV_RUN_CRASH) {
+    ACTF("Target %d fault %d", *afl->fsrv.afl_pacfix_target_reached, fault);
+  }
+
   if (likely(fault == afl->crash_mode)) {
 
     /* Keep only if there is new capability, add to queue for

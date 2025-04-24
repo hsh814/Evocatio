@@ -249,7 +249,8 @@ class ModuleSanitizerCoverage {
   LLVMContext *                    Ct = NULL;
   Module *                         Mo = NULL;
   GlobalVariable *                 AFLMapPtr = NULL;
-  Value *                          MapPtrFixed = NULL;
+  GlobalVariable                  *AFLPacfixTargetReachedPtr = NULL;
+  Value                           *MapPtrFixed = NULL;
   FILE *                           documentFile = NULL;
   size_t                           found = 0;
   // afl++ END
@@ -504,6 +505,10 @@ bool ModuleSanitizerCoverage::instrumentModule(
         ConstantExpr::getIntToPtr(MapAddr, PointerType::getUnqual(Int8Tyi));
 
   }
+
+  AFLPacfixTargetReachedPtr = new GlobalVariable(
+      M, PointerType::get(Int8Ty, 0), false, GlobalValue::ExternalLinkage, 0,
+      "__afl_pacfix_target_reached_ptr");
 
   Zero = ConstantInt::get(Int8Tyi, 0);
   One = ConstantInt::get(Int8Tyi, 1);
@@ -1300,6 +1305,7 @@ void ModuleSanitizerCoverage::instrumentFunction(
         if (callInst->getCallingConv() != llvm::CallingConv::C) continue;
         StringRef FuncName = Callee->getName();
         if (FuncName.compare(StringRef("__afl_coverage_interesting"))) continue;
+        if (FuncName.compare(StringRef("__afl_pacfix_mark_target_reached"))) continue;
 
         Value *val = ConstantInt::get(Int32Ty, ++afl_global_id);
         callInst->setOperand(1, val);
