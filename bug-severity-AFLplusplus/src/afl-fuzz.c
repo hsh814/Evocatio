@@ -1755,6 +1755,7 @@ int main(int argc, char **argv_orig, char **envp) {
   u8 *pacfix_shm_str = alloc_printf("%d", afl->shm_pacfix.shm_id);
   setenv(SHM_ENV_VAR_PACFIX, pacfix_shm_str, 1);
   ck_free(pacfix_shm_str);
+  afl->total_saved = 0;
 
   if (!afl->non_instrumented_mode && !afl->fsrv.qemu_mode &&
       !afl->unicorn_mode && !afl->fsrv.frida_mode &&
