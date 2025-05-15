@@ -1023,14 +1023,16 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     ACTF("Target %d fault %d", *afl->fsrv.afl_pacfix_target_reached, fault);
     if (*afl->fsrv.afl_pacfix_target_reached) {
       afl->total_saved++;
-      char *fn = alloc_printf("%s/seeds/%llu_%s_%llu", afl->out_dir, afl->total_saved,
-                              fault == FSRV_RUN_OK ? "pos" : "neg",
-                              get_cur_time() - afl->start_time);
-      int   fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
-      if (unlikely(fd < 0)) { PFATAL("Unable to create '%s'", fn); }
-      ck_write(fd, mem, len, fn);
-      close(fd);
-      ck_free(fn);
+      if (afl->total_saved <= 2000000) {
+        char *fn = alloc_printf("%s/seeds/%llu_%s_%llu", afl->out_dir, afl->total_saved,
+                                fault == FSRV_RUN_OK ? "pos" : "neg",
+                                get_cur_time() - afl->start_time);
+        int   fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
+        if (unlikely(fd < 0)) { PFATAL("Unable to create '%s'", fn); }
+        ck_write(fd, mem, len, fn);
+        close(fd);
+        ck_free(fn);
+      }
     }
   }
   
