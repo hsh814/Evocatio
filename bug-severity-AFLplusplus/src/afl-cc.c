@@ -945,9 +945,6 @@ static void edit_params(u32 argc, char **argv, char **envp) {
         "extern \"C\" void __afl_coverage_skip();"
         "extern \"C\" void __afl_coverage_on();"
         "extern \"C\" void __afl_coverage_off();";
-    
-    cc_params[cc_par_cnt++] =
-        "-D__AFL_PACFIX()=extern \"C\" void __afl_pacfix_mark_target_reached();";
 
   } else {
 
@@ -957,9 +954,6 @@ static void edit_params(u32 argc, char **argv, char **envp) {
         "void __afl_coverage_skip();"
         "void __afl_coverage_on();"
         "void __afl_coverage_off();";
-    
-    cc_params[cc_par_cnt++] =
-        "-D__AFL_PACFIX()=void __afl_pacfix_mark_target_reached();";
 
   }
 
@@ -971,8 +965,6 @@ static void edit_params(u32 argc, char **argv, char **envp) {
   cc_params[cc_par_cnt++] =
       "-D__AFL_COVERAGE_DISCARD()=__afl_coverage_discard()";
   cc_params[cc_par_cnt++] = "-D__AFL_COVERAGE_SKIP()=__afl_coverage_skip()";
-  cc_params[cc_par_cnt++] =
-      "-D__AFL_PACFIX_MARK_TARGET_REACHED()=__afl_pacfix_mark_target_reached()";
   cc_params[cc_par_cnt++] =
       "-D__AFL_FUZZ_TESTCASE_BUF=(__afl_fuzz_ptr ? __afl_fuzz_ptr : "
       "__afl_fuzz_alt_ptr)";

@@ -490,7 +490,6 @@ typedef struct afl_state {
 
   afl_forkserver_t fsrv;
   sharedmem_t      shm;
-  sharedmem_t      shm_pacfix;
   sharedmem_t     *shm_fuzz;
   afl_env_vars_t   afl_env;
 

@@ -390,7 +390,6 @@
 /* Environment variable used to pass SHM ID to the called program. */
 
 #define SHM_ENV_VAR "__AFL_SHM_ID"
-#define SHM_ENV_VAR_PACFIX "__AFL_SHM_ID_PACFIX"
 
 /* Environment variable used to pass SHM FUZZ ID to the called program. */
 
@@ -449,7 +448,6 @@
 
 #define MAP_SIZE_POW2 16
 #define MAP_SIZE (1U << MAP_SIZE_POW2)
-#define MAP_SIZE_PACFIX 16
 
 /* Maximum allocator request size (keep well under INT_MAX): */
 

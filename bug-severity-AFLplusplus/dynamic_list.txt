@@ -13,7 +13,6 @@
   "__afl_coverage_off";
   "__afl_coverage_on";
   "__afl_coverage_skip";
-  "__afl_pacfix_mark_target_reached";
   "__afl_dictionary";
   "__afl_dictionary_len";
   "__afl_final_loc";

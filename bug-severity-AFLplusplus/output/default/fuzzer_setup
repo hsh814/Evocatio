@@ -1,0 +1,3 @@
+# environment variables:
+# command line:
+'../../AFLplusplus/afl-fuzz' '-i' 'input' '-o' 'output' '-C' './prog.meta'

@@ -1750,11 +1750,6 @@ int main(int argc, char **argv_orig, char **envp) {
   afl->argv = use_argv;
   afl->fsrv.trace_bits =
       afl_shm_init(&afl->shm, afl->fsrv.map_size, afl->non_instrumented_mode);
-  afl->fsrv.afl_pacfix_target_reached = afl_shm_init(&afl->shm_pacfix,
-      MAP_SIZE_PACFIX, 1);
-  u8 *pacfix_shm_str = alloc_printf("%d", afl->shm_pacfix.shm_id);
-  setenv(SHM_ENV_VAR_PACFIX, pacfix_shm_str, 1);
-  ck_free(pacfix_shm_str);
   afl->total_saved = 0;
 
   if (!afl->non_instrumented_mode && !afl->fsrv.qemu_mode &&
