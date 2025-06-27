@@ -1028,6 +1028,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     }
     memcpy(trace_bits_backup, afl->fsrv.trace_bits, afl->fsrv.map_size);
     setenv("PAC_INTERNAL_PATCH_ID", "0", 1);
+    write_to_testcase(afl, mem, len);
     fsrv_run_result_t orig_result = fuzz_run_target(afl, &afl->fsrv, afl->fsrv.exec_tmout);
     memcpy(afl->fsrv.trace_bits, trace_bits_backup, afl->fsrv.map_size);
     if (orig_result == FSRV_RUN_OK) {
