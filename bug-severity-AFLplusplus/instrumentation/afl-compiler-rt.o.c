@@ -918,6 +918,8 @@ static void __afl_start_forkserver(void) {
   u32 already_read_first = 0;
   u32 was_killed;
 
+  u8 *reached_file_path = getenv("PAC_REACHED_FILE_PATH");
+
   u8 child_stopped = 0;
 
   void (*old_sigchld_handler)(int) = 0;  // = signal(SIGCHLD, SIG_DFL);
@@ -1069,6 +1071,40 @@ static void __afl_start_forkserver(void) {
     if (!child_stopped) {
 
       /* Once woken up, create a clone of our process. */
+      // PACAPR
+      u32 patch_id = 0;
+      // Read patch ID from the pipe
+      if (read(FORKSRV_FD, &patch_id, 4) != 4) {
+
+        _exit(1);
+
+      }
+      u32 gen_reached_file = 0;
+      // Check if we should generate a .reached file or not
+      if (read(FORKSRV_FD, &gen_reached_file, 4) != 4) {
+
+        _exit(1);
+
+      }
+      // Check that .reached file path is set
+      if (gen_reached_file && !reached_file_path) {
+
+        _exit(1);
+
+      }
+      // Set proper environment variables
+      char patch_id_str[12];
+      sprintf(patch_id_str, "%u", patch_id);
+      setenv("META_PATCH_ID", patch_id_str, 1);
+      if (gen_reached_file) {
+        setenv("META_REACHED_FILE", reached_file_path, 1);
+      }
+      else {
+        unsetenv("META_REACHED_FILE");
+      }
+      if (access(reached_file_path, F_OK) == 0) {
+        remove(reached_file_path);
+      }
 
       child_pid = fork();
       if (child_pid < 0) {

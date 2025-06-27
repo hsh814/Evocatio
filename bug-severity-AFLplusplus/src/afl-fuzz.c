@@ -1119,6 +1119,25 @@ int main(int argc, char **argv_orig, char **envp) {
 
   }
 
+  // PACAPR
+  u8* patch_id_str = getenv("PAC_PATCH_ID");
+  if (!patch_id_str) {
+    FATAL("PAC_PATCH_ID not set!");
+  }
+  else afl->patch_id = (u32)atoi(patch_id_str);
+  sprintf(afl->angelic_file_path, "%s/.reached", getcwd(NULL, 0));
+  afl->patch_loc_reached_count = 0;
+  afl->patch_loc_reached_set = malloc(sizeof(SimpleSet));
+  set_init(afl->patch_loc_reached_set);
+  afl->max_patch_loc_reached = 461;
+  u8* max_reached = getenv("PAC_MAX_LOC_REACHED");
+  if (max_reached) {
+    afl->max_patch_loc_reached = (u32)atoi(max_reached);
+  }
+  ACTF("Using max patch location reached: %u",
+       afl->max_patch_loc_reached);
+  setenv("PAC_REACHED_FILE_PATH", afl->angelic_file_path, 1);
+
   if (unlikely(afl->afl_env.afl_persistent_record)) {
 
   #ifdef AFL_PERSISTENT_RECORD

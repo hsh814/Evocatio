@@ -761,7 +761,40 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
 
   write_to_testcase(afl, out_buf, len);
 
+  // PACAPR
+  setenv("PAC_INTERNAL_STORE_REACHED_FILE", "1", 1);
+  u8 patch_id[12];
+  sprintf(patch_id, "%u", afl->patch_id);
+  setenv("PAC_INTERNAL_PATCH_ID", patch_id, 1);
+
   fault = fuzz_run_target(afl, &afl->fsrv, afl->fsrv.exec_tmout);
+
+  // PACAPR
+  if (fault == FSRV_RUN_OK && access(afl->angelic_file_path, F_OK) == 0) {
+    FILE *file = fopen(afl->angelic_file_path, "r");
+    if (file == NULL) {
+      PFATAL("File exists, but failed to open angelic file: %s",
+             afl->angelic_file_path);
+    }
+    u8 line[256];
+    fgets(line, sizeof(line), file);
+    fclose(file);
+    if (set_contains(afl->patch_loc_reached_set, line) == SET_FALSE) {
+      afl->patch_loc_reached_count++;
+      set_add(afl->patch_loc_reached_set, line);
+    }
+    u8 fn[PATH_MAX];
+    sprintf(fn, PATH_MAX, "%s/unique-states/id:%06u,time:%llu", afl->out_dir,
+            afl->patch_loc_reached_count, get_cur_time() + afl->prev_run_time - afl->start_time);
+    s32 fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
+    if (unlikely(fd < 0)) { PFATAL("Unable to create '%s'", fn); }
+    ck_write(fd, line, len, fn);
+    close(fd);
+    if (afl->patch_loc_reached_count >= afl->max_patch_loc_reached) {
+      OKF("Reached patched location %u times, stopping fuzzing.", afl->patch_loc_reached_count);
+      afl->stop_soon = 2;
+    }
+  }
 
   if (afl->stop_soon) { return 1; }
 

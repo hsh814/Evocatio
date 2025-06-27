@@ -35,6 +35,8 @@ khash_t(m64HashTable) *heatMapUnion;           /* capability union heat map */
 int union_cnt = 0;                             /* number of union we have */
 khash_t(m64HashTable) *all_cap_hashTable;     /* all capabilities we have ever seen */
 
+u8 *trace_bits_backup = NULL;
+
 /* Write bitmap to file. The bitmap is useful mostly for the secret
    -B option, to focus a separate fuzzing session on a particular
    interesting input without rediscovering all the others. */
@@ -1018,8 +1020,25 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
       afl->n_fuzz[cksum % N_FUZZ_SIZE]++;
 
   }
-  // PACFIX: use both
-  if (fault == FSRV_RUN_OK || fault == FSRV_RUN_CRASH) {
+  if (fault == FSRV_RUN_OK) {
+    // PACAPR
+    // Reset patch ID to run buggy version
+    if (trace_bits_backup == NULL) {
+      trace_bits_backup = ck_alloc(afl->fsrv.map_size);
+    }
+    memcpy(trace_bits_backup, afl->fsrv.trace_bits, afl->fsrv.map_size);
+    setenv("PAC_INTERNAL_PATCH_ID", "0", 1);
+    fsrv_run_result_t orig_result = fuzz_run_target(afl, &afl->fsrv, afl->fsrv.exec_tmout);
+    memcpy(afl->fsrv.trace_bits, trace_bits_backup, afl->fsrv.map_size);
+    if (orig_result == FSRV_RUN_OK) {
+      // Success in original binary, current patch has regression error. Patch is unsafe; stop fuzzer here.
+      afl->stop_soon = 2;
+      OKF("Program has regression error. Test input crashed in patched program, but not in original program. Stopping fuzzer.");
+    }
+    u8 patch_id_str[12];
+    sprintf(patch_id_str, "%d", afl->patch_id);
+    setenv("PAC_INTERNAL_PATCH_ID", patch_id_str, 1);
+    /* Regression test end */
   }
   
   if (likely(fault == afl->crash_mode)) {

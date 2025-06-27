@@ -88,6 +88,7 @@
 
 #include "cJSON.h"
 #include "khash.h"
+#include "set.h"
 KHASH_MAP_INIT_INT64(m64HashTable, unsigned int)   // instantiate structs and methods
 
 /* For systems that have sched_setaffinity; right now just Linux, but one
@@ -836,6 +837,13 @@ typedef struct afl_state {
   FILE *introspection_file;
   u32   bitsmap_size;
 #endif
+
+  // PACAPR
+  u32 patch_id;
+  u8  angelic_file_path[1024];
+  u32 patch_loc_reached_count;
+  u32 max_patch_loc_reached;
+  SimpleSet *patch_loc_reached_set;
 
 } afl_state_t;
 
