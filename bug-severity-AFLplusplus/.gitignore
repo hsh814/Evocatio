@@ -2,6 +2,7 @@
 .test2
 .sync_tmp
 .vscode
+.idea
 *.o
 *.so
 *.swp

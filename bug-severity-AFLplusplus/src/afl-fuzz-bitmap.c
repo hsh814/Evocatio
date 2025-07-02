@@ -1020,7 +1020,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
       afl->n_fuzz[cksum % N_FUZZ_SIZE]++;
 
   }
-  if (fault == FSRV_RUN_OK) {
+  if (fault == FSRV_RUN_CRASH) {
     // PACAPR
     // Reset patch ID to run buggy version
     if (trace_bits_backup == NULL) {

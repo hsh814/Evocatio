@@ -1123,9 +1123,23 @@ int main(int argc, char **argv_orig, char **envp) {
   u8* patch_id_str = getenv("PAC_PATCH_ID");
   if (!patch_id_str) {
     FATAL("PAC_PATCH_ID not set!");
+  } else { 
+    afl->patch_id = (u32)atoi(patch_id_str);
   }
-  else afl->patch_id = (u32)atoi(patch_id_str);
-  sprintf(afl->angelic_file_path, "%s/.reached", getcwd(NULL, 0));
+  u8* state_file_path = getenv("PAC_REACHED_FILE_PATH");
+  if (!state_file_path) {
+    sprintf(afl->state_file_path, "%s/.reached", getcwd(NULL, 0));
+    setenv("PAC_REACHED_FILE_PATH", afl->state_file_path, 1);
+  } else {
+    sprintf(afl->state_file_path, "%s", state_file_path);
+  }
+  u8* branch_file_path = getenv("PAC_BRANCH_FILE_PATH");
+  if (!branch_file_path) {
+    sprintf(afl->branch_file_path, "%s/.branch", getcwd(NULL, 0));
+    setenv("PAC_BRANCH_FILE_PATH", afl->branch_file_path, 1);
+  } else {
+    sprintf(afl->branch_file_path, "%s", branch_file_path);
+  }
   afl->patch_loc_reached_count = 0;
   afl->patch_loc_reached_set = malloc(sizeof(SimpleSet));
   set_init(afl->patch_loc_reached_set);
@@ -1136,7 +1150,7 @@ int main(int argc, char **argv_orig, char **envp) {
   }
   ACTF("Using max patch location reached: %u",
        afl->max_patch_loc_reached);
-  setenv("PAC_REACHED_FILE_PATH", afl->angelic_file_path, 1);
+  setenv("PAC_REACHED_FILE_PATH", "0", 1);
 
   if (unlikely(afl->afl_env.afl_persistent_record)) {
 
@@ -1809,6 +1823,9 @@ int main(int argc, char **argv_orig, char **envp) {
 
       afl_fsrv_kill(&afl->fsrv);
       afl_shm_deinit(&afl->shm);
+      set_destroy(afl->patch_loc_reached_set);
+      free(afl->patch_loc_reached_set);
+      afl->patch_loc_reached_set = NULL;
       afl->fsrv.map_size = new_map_size;
       afl->fsrv.trace_bits =
           afl_shm_init(&afl->shm, new_map_size, afl->non_instrumented_mode);

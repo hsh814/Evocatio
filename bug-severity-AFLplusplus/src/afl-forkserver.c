@@ -1184,24 +1184,13 @@ fsrv_run_result_t afl_fsrv_run_target(afl_forkserver_t *fsrv, u32 timeout,
 
   fsrv->last_run_timed_out = 0;
 
+  // PACAPR
   u8 *patch_id = getenv("PAC_INTERNAL_PATCH_ID");
   if (!patch_id) { patch_id = getenv("PAC_PATCH_ID"); }
   u32 patch_id_int = atoi(patch_id);
   if ((res = write(fsrv->fsrv_ctl_fd, &patch_id_int, 4)) != 4) {
     if (*stop_soon_p) return 0;
     RPFATAL(res, "Unable to request new process from fork server (OOM?)");
-  }
-  u8 *reached_file = getenv("PAC_INTERNAL_STORE_REACHED_FILE");
-  if (!reached_file) {
-    ACTF("PAC_INTERNAL_STORE_REACHED_FILE not set, using 0 instead.");
-    reached_file = "0";
-  }
-  u32 reached_file_int = (u32)atoi(reached_file);
-  if ((res = write(fsrv->fsrv_ctl_fd, &reached_file_int, 4)) != 4) {
-
-    if (*stop_soon_p) { return 0; }
-    RPFATAL(res, "Unable to request new process from fork server (OOM?)");
-
   }
 
   if ((res = read(fsrv->fsrv_st_fd, &fsrv->child_pid, 4)) != 4) {
