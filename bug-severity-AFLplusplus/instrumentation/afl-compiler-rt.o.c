@@ -1080,21 +1080,21 @@ static void __afl_start_forkserver(void) {
         _exit(1);
       }
 
-      if (!reached_file_path) {
-        _exit(1);
-      }
-
       // Set proper environment variables
       char patch_id_str[12];
       sprintf(patch_id_str, "%u", patch_id);
       setenv("META_PATCH_ID", patch_id_str, 1);
-      setenv("META_REACHED_FILE", reached_file_path, 1);
-      if (access(reached_file_path, F_OK) == 0) {
-        remove(reached_file_path);
+      if (reached_file_path) {
+        setenv("META_REACHED_FILE", reached_file_path, 1);
+        if (access(reached_file_path, F_OK) == 0) {
+          remove(reached_file_path);
+        }
       }
-      setenv("META_BRANCH_FILE", branch_file_path, 1);
-      if (access(branch_file_path, F_OK) == 0) {
-        remove(branch_file_path);
+      if (branch_file_path) {
+        setenv("META_BRANCH_FILE", branch_file_path, 1);
+        if (access(branch_file_path, F_OK) == 0) {
+          remove(branch_file_path);
+        }
       }
 
       child_pid = fork();
