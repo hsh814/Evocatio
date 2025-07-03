@@ -38,6 +38,7 @@ typedef struct afl_forkserver {
   /* a program that includes afl-forkserver needs to define these */
 
   u8 *trace_bits;                       /* SHM with instrumentation bitmap  */
+  u8 *pacapr_reached;                   /* SHM with reached locations for PAC-APR */
 
   s32 fsrv_pid,                         /* PID of the fork server           */
       child_pid,                        /* PID of the fuzzed program        */

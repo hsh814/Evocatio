@@ -1,8 +1,10 @@
+CFLAGS = -fsanitize=address -g -O0
+
 all:
-	$(CC) -c src.c $(CFLAGS) -fsanitize=address -o src.o
-	$(CC) src.o -o prog $(CFLAGS) -fsanitize=address $(LDFLAGS)
-	$(CC) -c src-meta.c $(CFLAGS) -fsanitize=address -o src-meta.o
-	$(CC) src-meta.o -o prog.meta $(CFLAGS) -fsanitize=address $(LDFLAGS)
+	$(CC) -c src.c $(CFLAGS) -o src.o
+	$(CC) src.o -o prog $(CFLAGS) $(LDFLAGS)
+	$(CC) -c src-meta.c $(CFLAGS) -o src-meta.o
+	$(CC) src-meta.o -o prog.meta $(CFLAGS) $(LDFLAGS)
 
 clean:
 	rm -f src.o prog

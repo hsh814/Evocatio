@@ -1141,8 +1141,7 @@ int main(int argc, char **argv_orig, char **envp) {
     sprintf(afl->branch_file_path, "%s", branch_file_path);
   }
   afl->patch_loc_reached_count = 0;
-  afl->patch_loc_reached_set = malloc(sizeof(SimpleSet));
-  set_init(afl->patch_loc_reached_set);
+  afl->patch_loc_reached_set = hashmap_init(1024);
   afl->max_patch_loc_reached = 461;
   u8* max_reached = getenv("PAC_MAX_LOC_REACHED");
   if (max_reached) {
@@ -1785,6 +1784,17 @@ int main(int argc, char **argv_orig, char **envp) {
       afl_shm_init(&afl->shm, afl->fsrv.map_size, afl->non_instrumented_mode);
   afl->total_saved = 0;
 
+  // PACAPR
+  afl->shm_pacapr = ck_alloc(sizeof(sharedmem_t));
+  afl->fsrv.pacapr_reached = afl_shm_init(afl->shm_pacapr, MAP_SIZE_PACAPR, 
+                                         afl->non_instrumented_mode);
+  if (!afl->fsrv.pacapr_reached) {
+    PFATAL("Failed to initialize shared memory for PACAPR reached locations");
+  }
+  u8 reached_env[16];
+  snprintf(reached_env, 16, "%u", afl->shm_pacapr->shm_id);
+  setenv("PAC_REACHED_ENV", reached_env, 1);
+
   if (!afl->non_instrumented_mode && !afl->fsrv.qemu_mode &&
       !afl->unicorn_mode && !afl->fsrv.frida_mode &&
       !afl->afl_env.afl_skip_bin_check) {
@@ -1823,7 +1833,7 @@ int main(int argc, char **argv_orig, char **envp) {
 
       afl_fsrv_kill(&afl->fsrv);
       afl_shm_deinit(&afl->shm);
-      set_destroy(afl->patch_loc_reached_set);
+      hashmap_deinit(afl->patch_loc_reached_set);
       free(afl->patch_loc_reached_set);
       afl->patch_loc_reached_set = NULL;
       afl->fsrv.map_size = new_map_size;
@@ -2365,6 +2375,9 @@ stop_fuzzing:
   destroy_extras(afl);
   destroy_custom_mutators(afl);
   afl_shm_deinit(&afl->shm);
+  // PACAPR
+  afl_shm_deinit(afl->shm_pacapr);
+  ck_free(afl->shm_pacapr);
 
   if (afl->shm_fuzz) {
 

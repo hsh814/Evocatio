@@ -918,10 +918,6 @@ static void __afl_start_forkserver(void) {
   u32 already_read_first = 0;
   u32 was_killed;
 
-  // PACAPR
-  u8 *reached_file_path = getenv("PAC_REACHED_FILE_PATH");
-  u8 *branch_file_path = getenv("PAC_BRANCH_FILE_PATH");
-
   u8 child_stopped = 0;
 
   void (*old_sigchld_handler)(int) = 0;  // = signal(SIGCHLD, SIG_DFL);
@@ -1084,18 +1080,6 @@ static void __afl_start_forkserver(void) {
       char patch_id_str[12];
       sprintf(patch_id_str, "%u", patch_id);
       setenv("META_PATCH_ID", patch_id_str, 1);
-      if (reached_file_path) {
-        setenv("META_REACHED_FILE", reached_file_path, 1);
-        if (access(reached_file_path, F_OK) == 0) {
-          remove(reached_file_path);
-        }
-      }
-      if (branch_file_path) {
-        setenv("META_BRANCH_FILE", branch_file_path, 1);
-        if (access(branch_file_path, F_OK) == 0) {
-          remove(branch_file_path);
-        }
-      }
 
       child_pid = fork();
       if (child_pid < 0) {

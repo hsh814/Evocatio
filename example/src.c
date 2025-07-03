@@ -4,7 +4,7 @@
 int* a;
 
 int test(unsigned int i) {
-    // if (i >= 5) {
+    // if (i >= 5 && i <= 10) {
     //     return -1;
     // }
 
@@ -18,9 +18,17 @@ int main() {
     unsigned int i;
     scanf("%u", &i);
 
-    a = (int[]){1, 2, 3, 4, 5}; // Initialize array with values
+    a = malloc(5 * sizeof(int));
+    a[0] = 1;
+    a[1] = 2;
+    a[2] = 3;
+    a[3] = 4;
+    a[4] = 5;
+
     int ret = test(i);
     if (ret != -1) {
         printf("Return value: %d\n", ret);
     }
+
+    free(a);
 }

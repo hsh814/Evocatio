@@ -1,4 +1,7 @@
 *.o
-prog
-prog.meta
-output
+prog*
+core.*
+seeds
+*-out
+.reached
+.branch

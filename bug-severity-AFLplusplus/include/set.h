@@ -20,6 +20,28 @@ extern "C" {
 
 #include <inttypes.h>       /* uint64_t */
 
+#include "types.h"
+// PACAPR
+struct key_value_pair {
+    u64 key;
+    u8 value;
+    struct key_value_pair* next;
+};
+
+struct hashmap {
+    u64 size;
+    u64 table_size;
+    struct key_value_pair** table;
+};
+
+struct hashmap* hashmap_init(u64 table_size);
+u64 hashmap_fit(u64 key, u64 table_size);
+void hashmap_resize(struct hashmap *map);
+u64 hashmap_size(struct hashmap* map);
+void hashmap_insert(struct hashmap* map, u64 key, u8 value);
+void hashmap_remove(struct hashmap *map, u64 key);
+struct key_value_pair* hashmap_get(struct hashmap* map, u64 key);
+void hashmap_deinit(struct hashmap* map);
 
 /* https://gcc.gnu.org/onlinedocs/gcc/Alternate-Keywords.html#Alternate-Keywords */
 #ifndef __GNUC__

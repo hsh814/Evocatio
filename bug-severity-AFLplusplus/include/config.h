@@ -449,6 +449,9 @@
 #define MAP_SIZE_POW2 16
 #define MAP_SIZE (1U << MAP_SIZE_POW2)
 
+// PACAPR
+#define MAP_SIZE_PACAPR 4096
+
 /* Maximum allocator request size (keep well under INT_MAX): */
 
 #define MAX_ALLOC 0x40000000
