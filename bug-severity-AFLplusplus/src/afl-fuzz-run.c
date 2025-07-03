@@ -767,12 +767,12 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
   fault = fuzz_run_target(afl, &afl->fsrv, afl->fsrv.exec_tmout);
 
   // PACAPR
-  if (fault == FSRV_RUN_OK) {
+  if ((fault == FSRV_RUN_OK || fault == FSRV_RUN_CRASH)) {
     u8 has_unique_state = 0;
     if (access(afl->state_file_path, F_OK) == 0) {
+      ACTF("Found state_file at %s", afl->state_file_path);
       has_unique_state = 1;
     }
-
     u8 has_branch_trace = 0;
     u8 original_branch_trace[1000] = {'\0'};
     if (access(afl->branch_file_path, F_OK) == 0) {
@@ -784,9 +784,8 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
       fclose(file);
       has_branch_trace = 1;
     }
-
     // Run patched program and collect the result, program state and branch trace
-    if (has_unique_state || has_branch_trace) {
+    if (fault == FSRV_RUN_OK && (has_unique_state || has_branch_trace)) {
       u8 patch_id_str[12];
       sprintf(patch_id_str, "%d", afl->patch_id);
       setenv("PAC_INTERNAL_PATCH_ID", patch_id_str, 1); // Set patch ID to run patched version

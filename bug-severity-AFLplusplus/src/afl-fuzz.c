@@ -1128,14 +1128,14 @@ int main(int argc, char **argv_orig, char **envp) {
   }
   u8* state_file_path = getenv("PAC_REACHED_FILE_PATH");
   if (!state_file_path) {
-    sprintf(afl->state_file_path, "%s/.reached", getcwd(NULL, 0));
+    sprintf(afl->state_file_path, "%s/.reached", afl->out_dir);
     setenv("PAC_REACHED_FILE_PATH", afl->state_file_path, 1);
   } else {
     sprintf(afl->state_file_path, "%s", state_file_path);
   }
   u8* branch_file_path = getenv("PAC_BRANCH_FILE_PATH");
   if (!branch_file_path) {
-    sprintf(afl->branch_file_path, "%s/.branch", getcwd(NULL, 0));
+    sprintf(afl->branch_file_path, "%s/.branch", afl->out_dir);
     setenv("PAC_BRANCH_FILE_PATH", afl->branch_file_path, 1);
   } else {
     sprintf(afl->branch_file_path, "%s", branch_file_path);
@@ -1150,7 +1150,7 @@ int main(int argc, char **argv_orig, char **envp) {
   }
   ACTF("Using max patch location reached: %u",
        afl->max_patch_loc_reached);
-  setenv("PAC_REACHED_FILE_PATH", "0", 1);
+  // setenv("PAC_REACHED_FILE_PATH", "0", 1);
 
   if (unlikely(afl->afl_env.afl_persistent_record)) {
 
