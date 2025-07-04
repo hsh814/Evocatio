@@ -1126,20 +1126,18 @@ int main(int argc, char **argv_orig, char **envp) {
   } else { 
     afl->patch_id = (u32)atoi(patch_id_str);
   }
-  u8* state_file_path = getenv("PAC_REACHED_FILE_PATH");
-  if (!state_file_path) {
-    sprintf(afl->state_file_path, "%s/.reached", afl->out_dir);
-    setenv("PAC_REACHED_FILE_PATH", afl->state_file_path, 1);
-  } else {
-    sprintf(afl->state_file_path, "%s", state_file_path);
+  // PACAPR
+  afl->shm_pacapr = ck_alloc(sizeof(sharedmem_t));
+  afl->fsrv.pacapr_reached = afl_shm_init(afl->shm_pacapr, MAP_SIZE_PACAPR, 
+                                          afl->non_instrumented_mode);
+  if (!afl->fsrv.pacapr_reached) {
+    PFATAL("Failed to initialize shared memory for PACAPR reached locations");
   }
-  u8* branch_file_path = getenv("PAC_BRANCH_FILE_PATH");
-  if (!branch_file_path) {
-    sprintf(afl->branch_file_path, "%s/.branch", afl->out_dir);
-    setenv("PAC_BRANCH_FILE_PATH", afl->branch_file_path, 1);
-  } else {
-    sprintf(afl->branch_file_path, "%s", branch_file_path);
-  }
+  u8 reached_env[16];
+  snprintf(reached_env, 16, "%u", afl->shm_pacapr->shm_id);
+  setenv("PAC_REACHED_ENV", reached_env, 1);
+  OKF("pacapr_reached shm id %d size %d", afl->shm_pacapr->shm_id, afl->shm_pacapr->map_size);
+
   afl->patch_loc_reached_count = 0;
   afl->patch_loc_reached_set = hashmap_init(1024);
   afl->max_patch_loc_reached = 461;
@@ -1783,17 +1781,6 @@ int main(int argc, char **argv_orig, char **envp) {
   afl->fsrv.trace_bits =
       afl_shm_init(&afl->shm, afl->fsrv.map_size, afl->non_instrumented_mode);
   afl->total_saved = 0;
-
-  // PACAPR
-  afl->shm_pacapr = ck_alloc(sizeof(sharedmem_t));
-  afl->fsrv.pacapr_reached = afl_shm_init(afl->shm_pacapr, MAP_SIZE_PACAPR, 
-                                         afl->non_instrumented_mode);
-  if (!afl->fsrv.pacapr_reached) {
-    PFATAL("Failed to initialize shared memory for PACAPR reached locations");
-  }
-  u8 reached_env[16];
-  snprintf(reached_env, 16, "%u", afl->shm_pacapr->shm_id);
-  setenv("PAC_REACHED_ENV", reached_env, 1);
 
   if (!afl->non_instrumented_mode && !afl->fsrv.qemu_mode &&
       !afl->unicorn_mode && !afl->fsrv.frida_mode &&
