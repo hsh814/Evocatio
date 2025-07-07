@@ -846,17 +846,10 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         struct key_value_pair *kv = hashmap_get(afl->patch_loc_reached_set, hash);
         u8 fn[PATH_MAX];
         if (kv == NULL) { // Unique state
-          ACTF("Found a unique program state %d with checksum %llu", afl->patch_loc_reached_count, hash);
           hashmap_insert(afl->patch_loc_reached_set, hash, patched_result);
           afl->patch_loc_reached_count++;
-          snprintf(fn, PATH_MAX, "%s/unique-states/%s_%06u_%llu", afl->out_dir, patched_result == FSRV_RUN_OK ? "pos" : "neg",
-                   afl->patch_loc_reached_count, get_cur_time() + afl->prev_run_time - afl->start_time);
-          s32 fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
-          if (unlikely(fd < 0)) {
-            PFATAL("Unable to create '%s'", fn);
-          }
-          ck_write(fd, out_buf, len, fn);
-          close(fd);
+          save_to_file(afl, out_buf, len, patched_result, fn);
+          ACTF("Found a unique program state %d with checksum %llu - saved at %s", afl->patch_loc_reached_count, hash, fn);
         }
         // Should we stop?
         if (afl->patch_loc_reached_count >= afl->max_patch_loc_reached) {
@@ -884,12 +877,13 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         }
         // 2. Crash, OK
         if (fault == FSRV_RUN_CRASH && patched_result == FSRV_RUN_OK) {
-          OKF("CORRECT PATCH: fixed a crash (%s)", fn);
+          if (kv != NULL)
+            OKF("CORRECT PATCH: fixed a crash (%s)", fn);
           // Keep fuzzing
         }
         // 3. Ok, Crash
         if (fault == FSRV_RUN_OK && patched_result == FSRV_RUN_CRASH) {
-          if (kv != NULL) {
+          if (kv == NULL) {
             afl->patch_loc_reached_count++;
             save_to_file(afl, out_buf, len, patched_result, fn);
           }
@@ -931,7 +925,7 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
               branch_cur = branch_cur + 1;
               branch_cur_patched = branch_cur_patched + 1;
             }
-            if (!afl->stop_soon) {
+            if (!afl->stop_soon && kv == NULL) {
               OKF("CORRECT PATCH: keep same behavior (%s)", fn);
             }
           }
