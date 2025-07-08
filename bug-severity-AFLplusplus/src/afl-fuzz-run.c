@@ -877,13 +877,13 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         }
         // 2. Crash, OK
         if (fault == FSRV_RUN_CRASH && patched_result == FSRV_RUN_OK) {
-          if (kv != NULL)
+          if (kv == NULL)
             OKF("CORRECT PATCH: fixed a crash (%s)", fn);
           // Keep fuzzing
         }
         // 3. Ok, Crash
         if (fault == FSRV_RUN_OK && patched_result == FSRV_RUN_CRASH) {
-          if (kv == NULL) {
+          if (kv != NULL) {
             afl->patch_loc_reached_count++;
             save_to_file(afl, out_buf, len, patched_result, fn);
           }
