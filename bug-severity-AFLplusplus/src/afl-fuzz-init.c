@@ -1864,7 +1864,7 @@ static void handle_existing_out_dir(afl_state_t *afl) {
   if (delete_files(fn, "")) goto dir_cleanup_failed;
   ck_free(fn);
 
-  fn = alloc_printf("%s/unique-state-inputs", afl->out_dir);
+  fn = alloc_printf("%s/reached", afl->out_dir);
   if (delete_files(fn, "")) goto dir_cleanup_failed;
   ck_free(fn);
 
@@ -2057,7 +2057,7 @@ void setup_dirs_fds(afl_state_t *afl) {
   if (mkdir(tmp, 0700)) { PFATAL("Unable to create '%s'", tmp); }
   ck_free(tmp);
 
-  tmp = alloc_printf("%s/unique-state-inputs", afl->out_dir);
+  tmp = alloc_printf("%s/reached", afl->out_dir);
   if (mkdir(tmp, 0700)) { PFATAL("Unable to create '%s'", tmp); }
   ck_free(tmp);
 

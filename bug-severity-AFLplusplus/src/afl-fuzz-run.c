@@ -786,10 +786,10 @@ void print_result(u8 res, u8 original, u64 *pac_reached) {
   ACTF("PAC_RESULT: %d %s %s", res, original ? "ori" : "pat", output);
 }
 
-void save_to_file(afl_state_t *afl, u8 *out_buf, u32 len, u8 res, u8 *fn) {
-  snprintf(fn, PATH_MAX, "%s/unique-states/%s_%06u_%llu", afl->out_dir,
-           res == FSRV_RUN_OK ? "pos" : "neg",
-           afl->patch_loc_reached_count, get_cur_time() + afl->prev_run_time - afl->start_time);
+void save_to_file(afl_state_t *afl, u8 *out_buf, u32 len, u8 res, u8 *fn, u8 unique) {
+  snprintf(fn, PATH_MAX, "%s/%s/%s_%06u_%llu", afl->out_dir, unique ? "unique-states" : "reached",
+           res == FSRV_RUN_OK ? "pos" : "neg", unique ? afl->patch_loc_reached_count : afl->patch_loc_reached_count,
+           get_cur_time() + afl->prev_run_time - afl->start_time);
   s32 fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
   if (unlikely(fd < 0)) {
     PFATAL("Unable to create '%s'", fn);
@@ -840,16 +840,19 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
       // Analyze the result
       u64* pac_reached_patched = (u64*)afl->fsrv.pacapr_reached;
       // print_result(patched_result, 0, pac_reached_patched);
+      u8 fn[PATH_MAX];
       if (pac_reached_patched[0] != 0 && (patched_result == FSRV_RUN_OK || patched_result == FSRV_RUN_CRASH)) {
         // Valid result, check if the program state is unique
+        afl->patch_loc_reached_count++;
         u64 hash = hash64((u8*)pac_reached_patched, MAP_SIZE_PACAPR, HASH_CONST);
         struct key_value_pair *kv = hashmap_get(afl->patch_loc_reached_set, hash);
-        u8 fn[PATH_MAX];
         if (kv == NULL) { // Unique state
           hashmap_insert(afl->patch_loc_reached_set, hash, patched_result);
           afl->patch_loc_reached_count++;
-          save_to_file(afl, out_buf, len, patched_result, fn);
+          save_to_file(afl, out_buf, len, patched_result, fn, 1);
           ACTF("Found a unique program state %d with checksum %llu - saved at %s", afl->patch_loc_reached_count, hash, fn);
+        } else {
+          save_to_file(afl, out_buf, len, patched_result, fn, 0);
         }
         // Should we stop?
         if (afl->patch_loc_reached_count >= afl->max_patch_loc_reached) {
@@ -868,10 +871,10 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         // Now, check patch correctness
         // 1. Crash, Crash
         if (fault == FSRV_RUN_CRASH && patched_result == FSRV_RUN_CRASH) {
-          if (kv != NULL) {
-            afl->patch_loc_reached_count++;
-            save_to_file(afl, out_buf, len, patched_result, fn);
-          }
+          // if (kv != NULL) {
+          //   afl->patch_loc_reached_count++;
+          //   save_to_file(afl, out_buf, len, patched_result, fn, 1);
+          // }
           OKF("INCORRECT PATCH: missed a crash (%s)", fn);
           // Don't stop fuzzing, just report
         }
@@ -885,14 +888,15 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         if (fault == FSRV_RUN_OK && patched_result == FSRV_RUN_CRASH) {
           if (kv != NULL) {
             afl->patch_loc_reached_count++;
-            save_to_file(afl, out_buf, len, patched_result, fn);
+            save_to_file(afl, out_buf, len, patched_result, fn, 1);
           }
           OKF("INCORRECT PATCH: introduced a crash (%s)", fn);
           // We can stop fuzzing here
           afl->stop_soon = 2;
         }
         // 4. Ok, Ok
-        if (fault == FSRV_RUN_OK && patched_result == FSRV_RUN_OK) {
+        u8 *check_regression_error = getenv("PAC_CHECK_REGRESSION_ERROR");
+        if (fault == FSRV_RUN_OK && patched_result == FSRV_RUN_OK && check_regression_error != NULL && strcmp(check_regression_error, "0") != 0) {
           // Check regression
           // First, get branch trace - let's assume we have less than 1024 branches
           u64 branch_count = pac_reached[0];
@@ -900,7 +904,7 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
           if (branch_count != branch_count_patched) {
             if (kv != NULL) {
               afl->patch_loc_reached_count++;
-              save_to_file(afl, out_buf, len, patched_result, fn);
+              save_to_file(afl, out_buf, len, patched_result, fn, 1);
             }
             OKF("INCORRECT PATCH: introduced a branch that was not there before (%s)", fn);
             afl->stop_soon = 2;
@@ -916,7 +920,7 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
                 // Branches differ, regression error!!!!
                 if (kv != NULL) {
                   afl->patch_loc_reached_count++;
-                  save_to_file(afl, out_buf, len, patched_result, fn);
+                  save_to_file(afl, out_buf, len, patched_result, fn, 1);
                 }
                 OKF("INCORRECT PATCH: introduced a regression error (%s)", fn);
                 afl->stop_soon = 2;
@@ -925,14 +929,15 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
               branch_cur = branch_cur + 1;
               branch_cur_patched = branch_cur_patched + 1;
             }
-            if (!afl->stop_soon && kv == NULL) {
+            if (!afl->stop_soon && kv == NULL, 1) {
               OKF("CORRECT PATCH: keep same behavior (%s)", fn);
             }
           }
         }
       } else {
-        if (patched_result == FSRV_RUN_TMOUT) {
-          ACTF("Timeout while running patched program");
+        if (pac_reached_patched[0] != 0 && fault == FSRV_RUN_OK && patched_result == FSRV_RUN_TMOUT) {
+          save_to_file(afl, out_buf, len, FSRV_RUN_TMOUT, fn, 0);
+          ACTF("INCORRECT PATCH: Timeout while running patched program (%d, %d) (%s)", afl->patch_loc_reached_count, afl->reached_input_count, fn);
         } else if (pac_reached_patched[0] == 0) {
           ACTF("Failed to reach the patch location");
         } else {
