@@ -843,7 +843,7 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
       u8 fn[PATH_MAX];
       if (pac_reached_patched[0] != 0 && (patched_result == FSRV_RUN_OK || patched_result == FSRV_RUN_CRASH)) {
         // Valid result, check if the program state is unique
-        afl->patch_loc_reached_count++;
+        afl->reached_input_count++;
         u64 hash = hash64((u8*)pac_reached_patched, MAP_SIZE_PACAPR, HASH_CONST);
         struct key_value_pair *kv = hashmap_get(afl->patch_loc_reached_set, hash);
         if (kv == NULL) { // Unique state
@@ -856,15 +856,15 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         }
         // Should we stop?
         if (afl->patch_loc_reached_count >= afl->max_patch_loc_reached) {
-          snprintf(fn, PATH_MAX, "%s/unique-states/%s_%06u_%llu", afl->out_dir,
-                   patched_result == FSRV_RUN_OK ? "pos" : "neg",
-                   afl->patch_loc_reached_count, get_cur_time() + afl->prev_run_time - afl->start_time);
-          s32 fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
-          if (unlikely(fd < 0)) {
-            PFATAL("Unable to create '%s'", fn);
-          }
-          ck_write(fd, out_buf, len, fn);
-          close(fd);
+          // snprintf(fn, PATH_MAX, "%s/unique-states/%s_%06u_%llu", afl->out_dir,
+          //          patched_result == FSRV_RUN_OK ? "pos" : "neg",
+          //          afl->patch_loc_reached_count, get_cur_time() + afl->prev_run_time - afl->start_time);
+          // s32 fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
+          // if (unlikely(fd < 0)) {
+          //   PFATAL("Unable to create '%s'", fn);
+          // }
+          // ck_write(fd, out_buf, len, fn);
+          // close(fd);
           OKF("Reached patched location %u times, stopping fuzzing.", afl->patch_loc_reached_count);
           afl->stop_soon = 2;
         }
