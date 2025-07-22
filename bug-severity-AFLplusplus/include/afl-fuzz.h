@@ -848,6 +848,7 @@ typedef struct afl_state {
   struct hashmap *patch_loc_reached_set;
   u64 saved_crashes;
   sharedmem_t *shm_pacapr; /* shared memory for pacapr */
+  sharedmem_t *shm_crash_loc;
 
 } afl_state_t;
 

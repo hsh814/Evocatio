@@ -818,6 +818,7 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
   if ((fault == FSRV_RUN_OK || fault == FSRV_RUN_CRASH)) {
     // Check if we reached the patch location
     u64* pac_reached = (u64*)afl->fsrv.pacapr_reached;
+    u32 crash_loc_reached = *afl->fsrv.crash_loc_reached;
     // print_result(fault, 1, pac_reached);
     if (pac_reached[0] != 0) {
       // Backup the previous pac_reached
@@ -871,13 +872,18 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
         // Now, check patch correctness
         // 1. Crash, Crash
         if (fault == FSRV_RUN_CRASH && patched_result == FSRV_RUN_CRASH) {
-          if (kv != NULL) {
-            afl->patch_loc_reached_count++;
-            save_to_file(afl, out_buf, len, patched_result, fn, 1);
+          u32 crash_loc_reached_patched = *afl->fsrv.crash_loc_reached;
+          if (crash_loc_reached) {
+            if (kv != NULL) {
+              afl->patch_loc_reached_count++;
+              save_to_file(afl, out_buf, len, patched_result, fn, 1);
+            }
+            OKF("INCORRECT PATCH: missed a crash (%s)", fn);
+            afl->stop_soon = 2;
+            // Don't stop fuzzing, just report
+          } else {
+            ACTF("Crash in different location");
           }
-          OKF("INCORRECT PATCH: missed a crash (%s)", fn);
-          afl->stop_soon = 2;
-          // Don't stop fuzzing, just report
         }
         // 2. Crash, OK
         if (fault == FSRV_RUN_CRASH && patched_result == FSRV_RUN_OK) {

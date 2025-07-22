@@ -1125,7 +1125,9 @@ int main(int argc, char **argv_orig, char **envp) {
     FATAL("PAC_PATCH_ID not set!");
   } else { 
     afl->patch_id = (u32)atoi(patch_id_str);
+    OKF("PAC_PATCH_ID set to %d", afl->patch_id);
   }
+  setenv("PAC_INTERNAL_PATCH_ID", "0", 1);
   // PACAPR
   afl->shm_pacapr = ck_alloc(sizeof(sharedmem_t));
   afl->fsrv.pacapr_reached = afl_shm_init(afl->shm_pacapr, MAP_SIZE_PACAPR, 
@@ -1148,6 +1150,12 @@ int main(int argc, char **argv_orig, char **envp) {
   ACTF("Using max patch location reached: %u",
        afl->max_patch_loc_reached);
   // setenv("PAC_REACHED_FILE_PATH", "0", 1);
+  afl->shm_crash_loc = ck_alloc(sizeof(sharedmem_t));
+  afl->fsrv.crash_loc_reached = (u32*)afl_shm_init(afl->shm_crash_loc, sizeof(u32), afl->non_instrumented_mode);
+  char crash_loc_reached_str[16];
+  sprintf(crash_loc_reached_str, "%d", afl->shm_crash_loc->shm_id);
+  setenv("PAC_INTERNAL_CRASH_LOC_REACHED_ID", crash_loc_reached_str, 1);
+  *afl->fsrv.crash_loc_reached = 0;
 
   if (unlikely(afl->afl_env.afl_persistent_record)) {
 

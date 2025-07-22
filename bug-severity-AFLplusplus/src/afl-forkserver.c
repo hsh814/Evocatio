@@ -1172,6 +1172,7 @@ fsrv_run_result_t afl_fsrv_run_target(afl_forkserver_t *fsrv, u32 timeout,
   
   // PACAPR
   memset(fsrv->pacapr_reached, 0, MAP_SIZE_PACAPR);
+  *fsrv->crash_loc_reached = 0;
 
   MEM_BARRIER();
 
