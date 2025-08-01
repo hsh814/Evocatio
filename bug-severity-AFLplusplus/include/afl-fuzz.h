@@ -844,7 +844,9 @@ typedef struct afl_state {
   u8 branch_file_path[1024];
   u32 patch_loc_reached_count;
   u32 max_patch_loc_reached;
-  u32             reached_input_count;
+  u32 reached_input_count;
+  u32 regression_error_count;
+  u32 crashed_count;
   struct hashmap *patch_loc_reached_set;
   u64 saved_crashes;
   sharedmem_t *shm_pacapr; /* shared memory for pacapr */

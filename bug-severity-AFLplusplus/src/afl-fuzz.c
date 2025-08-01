@@ -2336,6 +2336,8 @@ stop_fuzzing:
 
   }
 
+  OKF("STAT: unique_program_states %u, regression_error: %u, crashed: %u", afl->patch_loc_reached_count, afl->regression_error_count, afl->crashed_count);
+
   /* Running for more than 30 minutes but still doing first cycle? */
 
   if (afl->queue_cycle == 1 &&
