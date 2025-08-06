@@ -960,12 +960,12 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
     if (fault == FSRV_RUN_OK || fault == FSRV_RUN_CRASH) {
       u64 *pac_reached = (u64 *)afl->fsrv.pacapr_reached;
       if (pac_reached[0] != 0) {
-        afl->reached_input_count++;
         u64 hash = hash64((u8*)pac_reached, MAP_SIZE_PACAPR, HASH_CONST);
         struct key_value_pair *kv = hashmap_get(afl->patch_loc_reached_set, hash);
         if (kv == NULL) {
           u8 fn[PATH_MAX];
           afl->reached_input_count++;
+          afl->patch_loc_reached_count++;
           hashmap_insert(afl->patch_loc_reached_set, hash, fault);
           save_to_file(afl, out_buf, len, fault, fn, 1, "reached");
           if (afl->reached_input_count >= afl->max_patch_loc_reached) {
